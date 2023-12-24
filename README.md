@@ -39,41 +39,40 @@ The Poisson distribution is the discrete probability distribution of the number 
 ```
 import numpy as np
 import math
-import matplotlib.pyplot as plt 
-x=[int(i) for i in input().split()]
-y=[int(i) for i in input().split()]
-N=len(x)
-sx=0
-sy=0
-sxy=0
-sx2=0
-sy2=0
-for i in range(0,N):
-    sx=sx+x[i]
-    sy=sy+y[i]
-    sxy=sxy+x[i]*y[i]
-    sx2=sx2+x[i]**2
-    sy2=sy2+y[i]**2
-r=(N*sxy-sx*sy)/(math.sqrt(N*sx2-sx*2)*math.sqrt(N*sy2-sy*2))
-print("The correlation cofficient of %0.3f"%r)
-byx=(N*sxy-sx*sy)/(N*sx2-sx**2)
-xmean=sx/N
-ymean=sy/N
-print("The Regression line Y on X is ::: %0.3f + %0.3f (x-%0.3f)"%(ymean,byx,xmean))
-plt.scatter(x,y)
-def reg(x):
-    return ymean+byx*(x-xmean)
-x=np.linspace(0,80,51)
-y1=reg(x)
-plt.plot(x,y1,'r')
-plt.xlabel('x-data')
-plt.ylabel('y-data')
-plt.legend(['Regression Line','Data points'])
-plt.show()
+import scipy.stats
+L=[int(i) for i in input().split()]
+N=len(L); M=max(L) 
+X=list();f=list()
+for i in range (M+1):
+    c = 0
+    for j in range(N):
+        if L[j]==i:
+            c=c+1
+    f.append(c)
+    X.append(i)
+sf=np.sum(f)
+p=list()
+for i in range(M+1):
+    p.append(f[i]/sf) 
+mean=np.inner(X,p)
+p=list();E=list();xi=list()
+print("X P(X=x) Obs.Fr Exp.Fr xi")
+print("--------------------------")
+for x in range(M+1):
+    p.append(math.exp(-mean)*mean**x/math.factorial(x))
+    E.append(p[x]*sf)
+    xi.append((f[x]-E[x])**2/E[x])
+    print("%2.2f %2.3f %4.2f %3.2f %3.2f"%(x,p[x],f[x],E[x],xi[x]))
+print("--------------------------")
+cal_chi2_sq=np.sum(xi)
+print("Calculated value of Chi square is %4.2f"%cal_chi2_sq)
+table_chi2=scipy.stats.chi2.ppf(1-.01,df=M)
+print("Table value of chi square at 1 level is %4.2f"%table_chi2)
+if cal_chi2_sq<table_chi2:
+    print("The given data can be fitted in poisson Distribution at 1% LOS")
+else:
+    print("The given data cannot be fitted in Poisson Distribution at 1% LOS")
 ```
-
-
-
 
 
 
